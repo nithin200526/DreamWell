@@ -56,16 +56,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (name, email, password) => {
     const response = await authAPI.signup(name, email, password);
-    const { accessToken, refreshToken, user } = response.data.data || response.data;
-    
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('user', JSON.stringify(user));
-    
-    setAccessToken(accessToken);
-    setRefreshToken(refreshToken);
-    setUser(user);
-    
+    // Don't auto-login after signup - let user login manually
     return response;
   };
 

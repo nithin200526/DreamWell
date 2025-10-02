@@ -31,8 +31,8 @@ const Signup = () => {
 
     try {
       await signup(name, email, password);
-      toast.success('Account created! Please verify your email.');
-      navigate('/dashboard');
+      toast.success('Account created successfully! Please login with your credentials.');
+      navigate('/login');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Signup failed. Please try again.');
     } finally {
