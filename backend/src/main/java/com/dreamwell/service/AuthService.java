@@ -39,8 +39,8 @@ public class AuthService {
     @Autowired
     private UserDetailsService userDetailsService;
     
-    @Autowired
-    private EmailService emailService;
+    // @Autowired
+    // private EmailService emailService; // Disabled for now
     
     @Transactional
     public AuthResponse signup(SignupRequest request) {
@@ -54,17 +54,11 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(User.Role.USER);
         user.setIsActive(true);
-        user.setIsEmailVerified(false);
-        
-        // Generate email verification token
-        String verificationToken = UUID.randomUUID().toString();
-        user.setEmailVerificationToken(verificationToken);
-        user.setEmailVerificationTokenExpiry(LocalDateTime.now().plusHours(24));
+        user.setIsEmailVerified(true); // Auto-verify email
         
         user = userRepository.save(user);
         
-        // Send verification email
-        emailService.sendVerificationEmail(user.getEmail(), user.getName(), verificationToken);
+        // Skip email verification for now
         
         // Generate tokens
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
