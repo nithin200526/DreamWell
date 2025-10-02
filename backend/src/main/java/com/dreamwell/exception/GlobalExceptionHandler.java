@@ -54,7 +54,11 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleGenericException(Exception ex) {
+        System.err.println("=== DETAILED ERROR LOG ===");
+        System.err.println("Error class: " + ex.getClass().getName());
+        System.err.println("Error message: " + ex.getMessage());
         ex.printStackTrace();
+        System.err.println("=== END ERROR LOG ===");
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("An error occurred: " + ex.getMessage()));
