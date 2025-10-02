@@ -60,8 +60,23 @@ public class UserService {
     
     @Transactional
     public void deleteAccount() {
-        User user = getCurrentUser();
-        userRepository.delete(user);
+        System.out.println("=== DELETE ACCOUNT DEBUG START ===");
+        try {
+            System.out.println("Attempting to get current user...");
+            User user = getCurrentUser();
+            System.out.println("Current user found: " + user.getEmail() + " (ID: " + user.getId() + ")");
+            System.out.println("Deleting user from database...");
+            userRepository.delete(user);
+            System.out.println("User deleted successfully");
+            System.out.println("=== DELETE ACCOUNT DEBUG SUCCESS ===");
+        } catch (Exception e) {
+            System.out.println("=== DELETE ACCOUNT DEBUG ERROR ===");
+            System.out.println("Error in deleteAccount: " + e.getClass().getName());
+            System.out.println("Error message: " + e.getMessage());
+            e.printStackTrace();
+            System.out.println("=== DELETE ACCOUNT DEBUG ERROR END ===");
+            throw e;
+        }
     }
     
     private User getCurrentUser() {
