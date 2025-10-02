@@ -44,28 +44,49 @@ public class AuthService {
     
     @Transactional
     public AuthResponse signup(SignupRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+        System.out.println("=== SIGNUP DEBUG START ===");
+        System.out.println("Signup request received for email: " + request.getEmail());
+        System.out.println("Name: " + request.getName());
+        System.out.println("Password length: " + (request.getPassword() != null ? request.getPassword().length() : 0));
+        
+        try {
+            if (userRepository.existsByEmail(request.getEmail())) {
+                System.out.println("Email already exists: " + request.getEmail());
+                throw new RuntimeException("Email already exists");
+            }
+            System.out.println("Email check passed");
+            
+            User user = new User();
+            user.setName(request.getName());
+            user.setEmail(request.getEmail());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setRole(User.Role.USER);
+            user.setIsActive(true);
+            user.setIsEmailVerified(true); // Auto-verify email
+            
+            System.out.println("User object created, saving to database...");
+            user = userRepository.save(user);
+            System.out.println("User saved successfully with ID: " + user.getId());
+            
+            // Skip email verification for now
+            
+            // Generate tokens
+            System.out.println("Generating tokens...");
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            String accessToken = jwtUtil.generateAccessToken(userDetails);
+            String refreshToken = createRefreshToken(user);
+            System.out.println("Tokens generated successfully");
+            
+            System.out.println("=== SIGNUP DEBUG SUCCESS ===");
+            return new AuthResponse(accessToken, refreshToken, UserDTO.fromEntity(user));
+        } catch (Exception e) {
+            System.out.println("=== SIGNUP DEBUG ERROR ===");
+            System.out.println("Error in signup: " + e.getClass().getName());
+            System.out.println("Error message: " + e.getMessage());
+            e.printStackTrace();
+            System.out.println("=== SIGNUP DEBUG ERROR END ===");
+            throw e;
         }
-        
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(User.Role.USER);
-        user.setIsActive(true);
-        user.setIsEmailVerified(true); // Auto-verify email
-        
-        user = userRepository.save(user);
-        
-        // Skip email verification for now
-        
-        // Generate tokens
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        String accessToken = jwtUtil.generateAccessToken(userDetails);
-        String refreshToken = createRefreshToken(user);
-        
-        return new AuthResponse(accessToken, refreshToken, UserDTO.fromEntity(user));
     }
     
     @Transactional
