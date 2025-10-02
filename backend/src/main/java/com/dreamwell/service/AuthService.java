@@ -130,7 +130,7 @@ public class AuthService {
         user.setPasswordResetTokenExpiry(LocalDateTime.now().plusHours(1));
         userRepository.save(user);
         
-        emailService.sendPasswordResetEmail(user.getEmail(), user.getName(), resetToken);
+        // emailService.sendPasswordResetEmail(user.getEmail(), user.getName(), resetToken); // Disabled for now
     }
     
     @Transactional
