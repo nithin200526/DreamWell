@@ -1,5 +1,5 @@
 # ---------------- Backend Build Stage ----------------
-    FROM maven:3.9.1-eclipse-temurin-21-focal AS backend-build
+    FROM maven:3.9.1-amazoncorretto-21 AS backend-build
     WORKDIR /app
     COPY backend/pom.xml .
     RUN mvn dependency:go-offline -B
